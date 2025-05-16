@@ -179,8 +179,7 @@ def process_variant(var, var_type):
 
 def main():
     commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
-    print(commit)
-    sys.exit()
+    cmd = ' '.join([os.path.basename(sys.argv[0])] + sys.argv[1:])
     args = parse_user_input()
     assert os.path.abspath(args.v) != os.path.abspath(args.o)
     if not args.o.endswith('.gz'):
@@ -188,7 +187,6 @@ def main():
 
     write_headers = True
     norm_pass = False
-    print(f"##{' '.join(sys.argv)}\n")
 
     with gzip.open(args.v, 'rt') as f, gzip.open(args.o, 'wt') as o:
         for line in f:
@@ -214,7 +212,8 @@ def main():
                     else:
                         sys.exit("See README at https://github.com/ryandkuster/squeegee for help")
 
-                o.write(f"##{' '.join(sys.argv)}\n")
+                o.write(f"##squeegee commit {commit}\n")
+                o.write(f"##{cmd}\n")
                 o.write(line)
             else:
                 var = line.rstrip().split()
