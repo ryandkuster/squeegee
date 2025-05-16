@@ -140,7 +140,16 @@ def process_variant(var, var_type):
 
 
 def main():
-    commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
+    #commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    repo_root = subprocess.check_output(
+        ['git', 'rev-parse', '--show-toplevel'],
+        cwd=script_dir
+        ).decode().strip()
+    commit = subprocess.check_output(
+        ['git', 'rev-parse', '--short', 'HEAD'],
+        cwd=repo_root
+        ).decode().strip()
     cmd = ' '.join([os.path.basename(sys.argv[0])] + sys.argv[1:])
     args = parse_user_input()
     assert os.path.abspath(args.v) != os.path.abspath(args.o)
