@@ -3,52 +3,14 @@
 """
 Open the vg deconstruct vcf and parse/summarize the variants
 
-SVTYPE can be SNP, MNP, INS, or DEL (currently no support for BND/DUP/INV)
-SVLEN is the length of the alt minus ref (SNP and MNP are REF len)
-END is calculated as follows:
-    INS: END = POS + (length REF - 1)
-    DEL: END = POS + abs(length ALT - length REF)
-    SNP: END = POS + (length REF - 1) (i.e., it's just POS)
-    MNP: END = POS + (length REF - 1)
+Squeegee is currently a rudimentary script that takes as input a vg
+deconstruct vcf file that has been normalized using bcftools norm.
 
-The traversal path starts and ends with a shared node. The first node is
-included in the actual reference and alternate sequences if all begin
-with the same base.
+The output is largely meant to allow users to have an INFO field
+annotated with SVTYPE, SVLEN, and END, as is common in structural
+variant calling tools (e.g., svim, sniffles, cutesv).
 
-Example:
-In this variant, the C and A are stored as individual nodes 100930 and
-100932. The T and G are stored in 100929 and 100931.
-['CA', 'TG']
-['>100928>100930>100932>100933',
- '>100928>100929>100931>100933']
-
-In this variant, the GG is stored as a single node 100964. The CA is
-stored in 100963.
-['GG', 'CA']
-['>100962>100964>100965',
- '>100962>100963>100965']
-
-In this variant, I believe the T is likely stored in 100141, and at
-times when there is a single base as an alt this seems to be how it is
-represented.
-['TAATA', 'T']
-['>100141>100142>100143',
- '>100141>100143']
-
-In this variant, the single G is likely stored in 99992, as AA does not
-share this common base.
-['G', 'GA', 'AA']
-['>99991>99992>99995',
- '>99991>99992>99994>99995',
- '>99991>99993>99994>99995']
-
-I belive the first shared A is in 100009, C is in 100013, and A is in
-100014. Nodes 100015 and 100016 are included to cover all nodes, much
-like how a gvcf covers all loci.
-['AC', 'A', 'AA']
-['>100009>100013>100014>100015>100016',
- '>100009>100014>100015>100016',
- '>100009>100010>100014>100015>100016']
+./squeegee --help for usage
 """
 
 import argparse
